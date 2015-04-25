@@ -15,6 +15,7 @@ bool myfunction (pair<string, int> pair1 ,pair<string, int> pair2)
 
 int main(int argc, char* argv[])
 {
+	//haha
 	string line;
 
 	CorrectorDict dict("data/words.txt");
