@@ -27,24 +27,40 @@ int main(int argc, char* argv[])
 
 		for (int i = 0; i < line.length(); i++)
 		{
-			while (line[i] != '!' && line[i] != '.' && line[i] != '?' && line[i] != ',')
+			if (line[i] == '!' || line[i] == '.' || line[i] == '?' || line[i] == ',')
 			{
-				string cur = line.substring(last, i);
-				last = i;
-				cout << cur << endl;
+				string tmp = line;
+				string cur = tmp.substr(last, i - last);
+				last = i + 1;
+				lines.push_back(cur);
 			}
 		}
-/*
-		istringstream cline(line);
 
-		string token;
-		vector <string> sentence;		
+		int size = lines.size();
+		vector<vector<string>> sentences(size);
 
-		while (getline(cline, token, ' '))
-			sentence.push_back(token);
+		for (int i = 0; i < lines.size(); i++)
+		{
+			istringstream cline(lines[i]);
+			string token;
 
-		dic.ProcessLine(sentence);
-*/
+			while (getline(cline, token, ' '))
+			{
+				if (token.compare("") != 0)
+					sentences[i].push_back(token);
+			}
+		}
+
+
+		for (int i = 0; i < sentences.size(); i++)
+		{
+			for (int j = 0; j < sentences[i].size(); j ++)
+			{
+				cout << sentences[i][j] << endl;
+			}
+
+			cout << "-------------------" << endl;			
+		}
 	}
 
 	return 0;
