@@ -58,7 +58,23 @@ bool MetaphoneDict::CheckExist(string & query)
 	return (primary_meta_dictionary.find(query) != primary_meta_dictionary.end());
 }
 
-vector<pair<string, int>> * MetaphoneDict::GetList(string & query)
+int MetaphoneDict::VerifySame(const string & str1, const string & str2)
+{
+	auto result1 = dm::double_metaphone(str1);
+	auto result2 = dm::double_metaphone(str2);
+	
+	int score = 0;
+
+	if (result1.first.compare(result2.first) == 0)
+		score += 2;
+
+	if (result1.second.compare(result2.second) == 0)
+		score += 1;
+
+	return score;
+}
+
+vector<string> * MetaphoneDict::GetList(string & query)
 {
 	auto result = dm::double_metaphone(query);
 
@@ -70,19 +86,16 @@ vector<pair<string, int>> * MetaphoneDict::GetList(string & query)
 		auto list1 = primary_meta_dictionary[primary];
 		auto list2 = secondary_meta_dictionary[second];
 
-		for (auto it = list1.begin(); it != list1.end(); it ++)
-			cout << *it << " ";
+		sort(list1.begin(), list1.end());
+		sort(list2.begin(), list2.end());
 
-		cout << endl;
-		
-		for (auto it = list2.begin(); it != list2.end(); it ++)
-			cout << *it << " ";
-	
-		cout << endl;
+		vector<string> * common = new vector<string>;
 
-		return new vector<pair<string, int>>();
+		set_intersection(list1.begin(),list1.end(),list2.begin(),list2.end(),back_inserter(*common));
+
+		return common;
 	}
 
-	return new vector<pair<string, int>>();
+	return new vector<string>();
 }
 

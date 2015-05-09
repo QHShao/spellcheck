@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 
+
 using namespace std;
 
 int main(int argc, char* argv[])
@@ -13,8 +14,7 @@ int main(int argc, char* argv[])
 	string query;
 	string quit ("Q");
 
-//	DistanceDict distance_dict("data/words.txt");
-
+	DistanceDict distance_dict;
 	MetaphoneDict mataphone_dict;
 
 	while(1)
@@ -26,13 +26,38 @@ int main(int argc, char* argv[])
 			break;
 
 		istringstream cline(query);
-		
-		auto list = mataphone_dict.GetList(query);
+		distance_dict.Format(query);
 
-	/*
-		for (auto it = list->begin(); it != list->end(); it++)
-			cout << it->first << endl;
-	*/
+		auto list = distance_dict.GetList(query);
+		auto it = list->begin();
+
+		if (it != list->end() && distance_dict.GetDistance(query, it->first) > 1)
+		{
+			if (mataphone_dict.VerifySame(query, it->first) == 0)
+			{
+				auto best = list->begin();
+				int max = 0;
+
+				for (it = list->begin() + 1; it != list->end(); it++)
+				{
+					int score = mataphone_dict.VerifySame(query, it->first);
+
+					if (score > max)
+					{
+						max = score;
+						best = it;
+					}
+				}
+
+				auto tmp = * best;
+				* best = list->front();
+				list->front() = tmp;
+			}
+
+		}			
+
+		cout << "[RESULT]:" <<it->first << endl;
+	
 	}
 
 	return 0;

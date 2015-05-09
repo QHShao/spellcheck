@@ -15,9 +15,11 @@ class DistanceDict
 
 	vector<pair<string, int>> * GetList(string & query);
 
-    DistanceDict(const string& filename);
+    DistanceDict();
 	
 	void Format(string& str);
+
+	int GetDistance(const string & str1, const string& str2);
 
 	int GetFrequency(const string & str);
 

@@ -5,12 +5,14 @@
 #include <cstring>
 #include <fstream>
 #include <sstream>
+#include <vector>
+#include <string>
 
 using namespace std;
 
 int main(int argc, char* argv[])
 {
-	NgramDict dic("data/bigram.txt");
+//	NgramDict dic("data/bigram.txt");
 
 	while (1)
 	{
@@ -19,15 +21,20 @@ int main(int argc, char* argv[])
 		string line;
 		getline(cin,line);
 
+		vector<string> lines;
+	
+		int last = 0;
+
 		for (int i = 0; i < line.length(); i++)
 		{
-			if (line[i] == '!' || line[i] == '.' || line[i] == '?' || line[i] == ',')
+			while (line[i] != '!' && line[i] != '.' && line[i] != '?' && line[i] != ',')
 			{
-				line.erase(i,1);
-				i --;
+				string cur = line.substring(last, i);
+				last = i;
+				cout << cur << endl;
 			}
 		}
-
+/*
 		istringstream cline(line);
 
 		string token;
@@ -37,6 +44,7 @@ int main(int argc, char* argv[])
 			sentence.push_back(token);
 
 		dic.ProcessLine(sentence);
+*/
 	}
 
 	return 0;

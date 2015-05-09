@@ -33,6 +33,6 @@ class NgramDict
 
 	unordered_map<string, vector<pair<string, int>>> ngram_dictionary;
 
-	DistanceDict frequency_dict = DistanceDict("data/words.txt");
+	DistanceDict frequency_dict;
 };
 #endif

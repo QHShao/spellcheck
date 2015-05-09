@@ -13,7 +13,9 @@ class MetaphoneDict
 
 	MetaphoneDict();
 
-	vector<pair<string, int>> * GetList(string & query);
+	vector<string> * GetList(string & query);
+
+	int VerifySame(const string & str1, const string & str2);
 
 	private:
 
@@ -26,7 +28,6 @@ class MetaphoneDict
 	unordered_map<string, vector<string>> primary_meta_dictionary;
 
 	unordered_map<string, vector<string>> secondary_meta_dictionary;
-
 
 };
 

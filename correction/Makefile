@@ -5,7 +5,7 @@ LDFLAGS = -std=c++1y -stdlib=libc++ -lc++abi
 
 OBJ_DIR = obj
 SINGLE_OBJS = $(patsubst %.o, $(OBJ_DIR)/%.o, single_corrector.o distance_dict.o metaphone_dict.o)
-SINGLET_OBJS = $(patsubst %.o, $(OBJ_DIR)/%.o, single_tester.o distance_dict.o)
+SINGLET_OBJS = $(patsubst %.o, $(OBJ_DIR)/%.o, single_tester.o distance_dict.o metaphone_dict.o)
 SENTEN_OBJS = $(patsubst %.o, $(OBJ_DIR)/%.o, sentence_corrector.o ngram_dict.o distance_dict.o)
 EXES = single_corrector single_tester sentence_corrector
 
@@ -23,7 +23,7 @@ single_corrector: $(SINGLE_OBJS)
 sentence_corrector: $(SENTEN_OBJS)
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-$(OBJ_DIR)/single_tester.o: single_tester.cpp distance_dict.h | $(OBJ_DIR)
+$(OBJ_DIR)/single_tester.o: single_tester.cpp distance_dict.h metaphone_dict.h| $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 $(OBJ_DIR)/single_corrector.o: single_corrector.cpp distance_dict.h metaphone_dict.h | $(OBJ_DIR)
