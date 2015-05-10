@@ -15,11 +15,13 @@ class NgramDict
 {
 	public:
 
-	NgramDict(const string& filename);
+	NgramDict();
 
-	void ProcessLine(vector<string> sentence);
+	void ProcessLine(vector<string> & sentence);
 
-	vector<int> * ScaneLine(vector<string> & sentence);
+	bool NonWord(vector<string> & sentence);
+
+	void RealWord(vector<string> & sentence);
 
 	void FormatLine(vector<string> & sentence);
 	
@@ -31,7 +33,7 @@ class NgramDict
 
 	int Levenshtein(const string & str1, const string& str2);
 
-	unordered_map<string, vector<pair<string, int>>> ngram_dictionary;
+	unordered_map<string, vector<pair<string, int>>> bigram_dictionary;
 
 	DistanceDict frequency_dict;
 };

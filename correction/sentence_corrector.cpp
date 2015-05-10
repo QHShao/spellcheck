@@ -12,27 +12,29 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-//	NgramDict dic("data/bigram.txt");
+	NgramDict ngram_dict;
 
 	while (1)
 	{
-		cout << "[ENTER] ";
+		cout << "[ENTER  ] ";
 		
 		string line;
 		getline(cin,line);
 
 		vector<string> lines;
-	
+		vector<char> punct;
+
 		int last = 0;
 
 		for (int i = 0; i < line.length(); i++)
 		{
-			if (line[i] == '!' || line[i] == '.' || line[i] == '?' || line[i] == ',')
+			if (line[i] == '!' || line[i] == '.' || line[i] == '?' || line[i] == ',' || line[i] == ':')
 			{
 				string tmp = line;
 				string cur = tmp.substr(last, i - last);
 				last = i + 1;
 				lines.push_back(cur);
+				punct.push_back(line[i]);
 			}
 		}
 
@@ -51,16 +53,23 @@ int main(int argc, char* argv[])
 			}
 		}
 
+		cout << "[SUGGEST] ";
 
 		for (int i = 0; i < sentences.size(); i++)
 		{
+			ngram_dict.ProcessLine(sentences[i]);
+			
 			for (int j = 0; j < sentences[i].size(); j ++)
 			{
-				cout << sentences[i][j] << endl;
+				cout << sentences[i][j];
+				if (j != sentences[i].size() - 1)
+					cout << " ";
 			}
 
-			cout << "-------------------" << endl;			
+			cout << punct[i] << " ";
 		}
+
+		cout << endl;
 	}
 
 	return 0;

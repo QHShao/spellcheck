@@ -18,7 +18,7 @@ bool NgramSort(pair<string, int> pair1 ,pair<string, int> pair2)
 	return (pair1.second > pair2.second);
 }
 
-NgramDict::NgramDict(const string& filename)
+NgramDict::NgramDict()
 {
     ifstream file("data/bigram.txt");
 	string line;
@@ -31,7 +31,7 @@ NgramDict::NgramDict(const string& filename)
 		char val[50];
 		sscanf(cline,"%d	%s	%s", &frequency, key, val);
 		pair <string, int> val_pair = make_pair(val, frequency);
-		ngram_dictionary[key].push_back(val_pair);
+		bigram_dictionary[key].push_back(val_pair);
 	}
 
 }
@@ -59,7 +59,7 @@ int NgramDict::Levenshtein(const string & str1, const string& str2)
 
 bool NgramDict::CheckExist(const string & key)
 {
-	return (ngram_dictionary.find(key) != ngram_dictionary.end());
+	return (bigram_dictionary.find(key) != bigram_dictionary.end());
 }
 
 void NgramDict::FormatLine(vector<string> & sentence)
@@ -78,57 +78,135 @@ void NgramDict::FormatLine(vector<string> & sentence)
 	}
 }
 
-vector<int> * NgramDict::ScaneLine(vector<string> & sentence)
+bool NgramDict::NonWord(vector<string> & sentence)
 {
-	auto result = new vector<int>();
-
+	vector<string> tmp = sentence;
+	FormatLine(tmp);
+	bool modified = false;
 
 	for (int i = 0; i < sentence.size(); i++)
 	{
-		if (frequency_dict.GetFrequency(sentence[i]) < 10)
-			result->push_back(i);
-	}
-
-	for (int i = 0; i < sentence.size() - 1; i++)
-	{
-		if (CheckExist(sentence[i]))
+		if (frequency_dict.GetFrequency(tmp[i]) < 100)
 		{
-			auto list = GetNext(sentence[i]);
-			bool flg = true;
-
-			for (auto it = list.begin(); it < list.end(); it++)
+			if (i == 0 || CheckExist(tmp[i - 1]) == false)
 			{
-				if (sentence[i + 1].compare(it->first) == 0)
+				auto flist = frequency_dict.GetList(tmp[i]);
+				string suggest = flist->begin()->first;
+
+				if ( sentence[i][0] <= 'Z' && sentence[i][0] >= 'A' )
+					suggest.replace(0, 1, 1, suggest[0] - ('Z'-'z'));
+
+				sentence[i] = suggest;
+			}
+			else
+			{
+				auto list = GetNext(sentence[i - 1]);
+				bool flg = true;
+
+				for (auto it = list.begin(); it != list.end(); it ++)
 				{
-					flg = false;								
-				}			
+					if (Levenshtein(it->first, tmp[i]) < 2)
+					{
+						string suggest = it->first;						
+						if ( sentence[i][0] <= 'Z' && sentence[i][0] >= 'A' )
+							suggest.replace(0, 1, 1, suggest[0] + ('Z'-'z'));	
+
+						sentence[i] = suggest;
+
+						flg = false;
+						break;
+					}
+				}
+
+				if (flg)
+				{
+					auto flist = frequency_dict.GetList(tmp[i]);						
+					string suggest = flist->begin()->first;
+
+					if ( sentence[i][0] <= 'Z' && sentence[i][0] >= 'A' )
+						suggest.replace(0, 1, 1, suggest[0] - ('Z'-'z'));
+
+					sentence[i] = suggest;
+				}
 			}
 
-			if (flg)
-			{
-				if (find(result->begin(), result->end(), i+1) == result->end())
-					result->push_back(i + 1);
-				i++;
-			}
+			modified = true;
 		}
 	}
 
-	return result;
+	return modified;
 }
 
-void NgramDict::ProcessLine(vector<string> sentence)
+void NgramDict::RealWord(vector<string> & sentence)
 {
-	FormatLine(sentence);
+	vector<string> tmp = sentence;
+	FormatLine(tmp);
+	bool modified = false;
 
-	auto result = ScaneLine(sentence);
 
-	for (auto it = result->begin(); it != result->end(); it++)
-		cout << sentence[*it] << " ";
+	for (int i = 0; i < tmp.size() - 1; i++)
+	{
+		bool find = false;
 
-	cout << endl;
+		if (CheckExist(tmp[i]))
+		{
+			auto list = GetNext(tmp[i]);
+			for (auto it = list.begin(); it != list.end(); it ++)
+			{
+				if (tmp[i + 1].compare(it->first) == 0)
+					find = true;
+			}
+		}
+		else
+			find = true;
+		
+		if (!find)
+		{
+			cout << "[SUSPECT] "<< sentence[i+1] << endl;
+
+			auto list = GetNext(sentence[i]);
+
+			bool flg = true;
+
+			for (auto it = list.begin(); it != list.end(); it ++)
+			{
+				if (Levenshtein(it->first, tmp[i + 1]) < 2)
+				{
+					sentence[i + 1] = it->first;
+					flg = false;
+					modified = true;
+					break;
+				}
+			}
+/*
+			if (flg)
+			{
+				auto flist = frequency_dict.GetList(tmp[i + 1]);
+
+				sentence[i + 1] = flist->begin()->first;
+				modified = true;
+			}
+*/	
+			i ++;
+		}
+	}
+
+	if (modified)
+		cout << "[SUGGEST] ";
 }
 
-vector<pair<string, int>> & NgramDict::GetNext(const string& key)
+void NgramDict::ProcessLine(vector<string> & sentence)
 {
-	return (ngram_dictionary.find(key))->second;
+	bool modified = NonWord(sentence);
+
+	if (modified == false)
+	{
+		cout << "(no non-word error)" << endl;
+		RealWord(sentence);
+	}
+}
+
+vector<pair<string, int>> & NgramDict::GetNext(const string & key)
+{
+	return (bigram_dictionary.find(key))->second;
 }
