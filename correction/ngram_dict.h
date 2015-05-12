@@ -19,6 +19,8 @@ class NgramDict
 
 	void ProcessLine(vector<string> & sentence);
 
+	bool ShouldIgnore(const string & str);
+
 	bool NonWord(vector<string> & sentence);
 
 	void RealWord(vector<string> & sentence);

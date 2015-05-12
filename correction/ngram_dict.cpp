@@ -20,7 +20,7 @@ bool NgramSort(pair<string, int> pair1 ,pair<string, int> pair2)
 
 NgramDict::NgramDict()
 {
-    ifstream file("data/bigram.txt");
+    ifstream file("data/empty.txt");
 	string line;
 
     while(getline(file, line))
@@ -62,6 +62,14 @@ bool NgramDict::CheckExist(const string & key)
 	return (bigram_dictionary.find(key) != bigram_dictionary.end());
 }
 
+bool NgramDict::ShouldIgnore(const string & str)
+{
+	if (string::npos != str.find_first_of("0123456789"))
+		return true;
+
+	return false;
+}
+
 void NgramDict::FormatLine(vector<string> & sentence)
 {
 	for (int i = 0; i < sentence.size(); i++)
@@ -86,31 +94,39 @@ bool NgramDict::NonWord(vector<string> & sentence)
 
 	for (int i = 0; i < sentence.size(); i++)
 	{
-		if (frequency_dict.GetFrequency(tmp[i]) < 100)
+		if ( i != 0 && sentence[i][0] <= 'Z' && sentence[i][0] >= 'A' )
+			continue;
+		else if (ShouldIgnore(sentence[i]))
+			continue;
+		else if (frequency_dict.GetFrequency(tmp[i]) < 10)
 		{
+
 			if (i == 0 || CheckExist(tmp[i - 1]) == false)
 			{
 				auto flist = frequency_dict.GetList(tmp[i]);
+
+				if (flist->size() == 0)
+					continue;
+
 				string suggest = flist->begin()->first;
 
-				if ( sentence[i][0] <= 'Z' && sentence[i][0] >= 'A' )
-					suggest.replace(0, 1, 1, suggest[0] - ('Z'-'z'));
-
+				suggest.insert(0, "[");
+				suggest.insert(suggest.length(), "]");
 				sentence[i] = suggest;
 			}
 			else
 			{
-				auto list = GetNext(sentence[i - 1]);
+				auto list = GetNext(tmp[i - 1]);
 				bool flg = true;
 
 				for (auto it = list.begin(); it != list.end(); it ++)
 				{
 					if (Levenshtein(it->first, tmp[i]) < 2)
 					{
-						string suggest = it->first;						
-						if ( sentence[i][0] <= 'Z' && sentence[i][0] >= 'A' )
-							suggest.replace(0, 1, 1, suggest[0] + ('Z'-'z'));	
+						string suggest = it->first;
 
+						suggest.insert(0, "[");
+						suggest.insert(suggest.length(), "]");
 						sentence[i] = suggest;
 
 						flg = false;
@@ -120,12 +136,15 @@ bool NgramDict::NonWord(vector<string> & sentence)
 
 				if (flg)
 				{
-					auto flist = frequency_dict.GetList(tmp[i]);						
+					auto flist = frequency_dict.GetList(tmp[i]);
+
+					if (flist->size() == 0)
+						continue;
+						
 					string suggest = flist->begin()->first;
 
-					if ( sentence[i][0] <= 'Z' && sentence[i][0] >= 'A' )
-						suggest.replace(0, 1, 1, suggest[0] - ('Z'-'z'));
-
+					suggest.insert(0, "[");
+					suggest.insert(suggest.length(), "]");
 					sentence[i] = suggest;
 				}
 			}
@@ -143,9 +162,14 @@ void NgramDict::RealWord(vector<string> & sentence)
 	FormatLine(tmp);
 	bool modified = false;
 
-
 	for (int i = 0; i < tmp.size() - 1; i++)
 	{
+		if ( i != 0 && sentence[i][0] <= 'Z' && sentence[i][0] >= 'A' )
+			continue;
+
+		if (ShouldIgnore(sentence[i]))
+			continue;
+
 		bool find = false;
 
 		if (CheckExist(tmp[i]))
@@ -162,9 +186,7 @@ void NgramDict::RealWord(vector<string> & sentence)
 		
 		if (!find)
 		{
-			cout << "[SUSPECT] "<< sentence[i+1] << endl;
-
-			auto list = GetNext(sentence[i]);
+			auto list = GetNext(tmp[i]);
 
 			bool flg = true;
 
@@ -172,38 +194,35 @@ void NgramDict::RealWord(vector<string> & sentence)
 			{
 				if (Levenshtein(it->first, tmp[i + 1]) < 2)
 				{
-					sentence[i + 1] = it->first;
+					string suggest = it->first;
+					suggest.insert(0, "[");
+					suggest.insert(suggest.length(), "]");
+	
+					sentence[i + 1] = suggest;
 					flg = false;
 					modified = true;
 					break;
 				}
 			}
-/*
+
 			if (flg)
 			{
-				auto flist = frequency_dict.GetList(tmp[i + 1]);
-
-				sentence[i + 1] = flist->begin()->first;
-				modified = true;
+				sentence[i].insert(0, "|");
+				sentence[i].insert(sentence[i].length(), "|");
 			}
-*/	
+
 			i ++;
 		}
 	}
 
-	if (modified)
-		cout << "[SUGGEST] ";
 }
 
 void NgramDict::ProcessLine(vector<string> & sentence)
 {
 	bool modified = NonWord(sentence);
-
+	
 	if (modified == false)
-	{
-		cout << "(no non-word error)" << endl;
 		RealWord(sentence);
-	}
 }
 
 vector<pair<string, int>> & NgramDict::GetNext(const string & key)

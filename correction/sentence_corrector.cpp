@@ -12,7 +12,7 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-	NgramDict ngram_dict;
+	NgramDict ngram_dict; ////////////
 
 	while (1)
 	{
@@ -21,19 +21,22 @@ int main(int argc, char* argv[])
 		string line;
 		getline(cin,line);
 
-		vector<string> lines;
+		vector<string> lines(0);
 		vector<char> punct;
 
 		int last = 0;
 
 		for (int i = 0; i < line.length(); i++)
 		{
-			if (line[i] == '!' || line[i] == '.' || line[i] == '?' || line[i] == ',' || line[i] == ':')
+			if (line[i] == '!' || line[i] == '.' || line[i] == '?' || line[i] == ',' || line[i] == ':' || line[i] == ';')
 			{
 				string tmp = line;
 				string cur = tmp.substr(last, i - last);
+
+				if (cur.compare("") != 0)
+					lines.push_back(cur);
+
 				last = i + 1;
-				lines.push_back(cur);
 				punct.push_back(line[i]);
 			}
 		}
@@ -71,6 +74,5 @@ int main(int argc, char* argv[])
 
 		cout << endl;
 	}
-
 	return 0;
 }
