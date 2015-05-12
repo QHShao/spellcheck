@@ -20,7 +20,7 @@ bool NgramSort(pair<string, int> pair1 ,pair<string, int> pair2)
 
 NgramDict::NgramDict()
 {
-    ifstream file("data/empty.txt");
+    ifstream file("data/bigram.txt");
 	string line;
 
     while(getline(file, line))
