@@ -28,6 +28,12 @@ int main(int argc, char* argv[])
 		istringstream cline(query);
 		distance_dict.Format(query);
 
+		if(distance_dict.CheckExist(query))
+		{
+			cout << "[RESULT]:" << query << endl;
+			continue;
+		}
+
 		auto list = distance_dict.GetList(query);
 		auto it = list->begin();
 
