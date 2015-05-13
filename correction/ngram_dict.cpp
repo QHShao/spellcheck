@@ -38,10 +38,17 @@ NgramDict::NgramDict()
 
 string NgramDict::Split(const string& str)
 {
+	if(frequency_dict.GetFrequency(str) > 10)
+	{
+		return string();
+	}
+
 	int len = str.length();
 
 	size_t best = 0;
 	string curBest = string();
+	string curPart1;
+	string curPart2;
 
 	for (int i = 1; i < len - 1; i++)
 	{
@@ -56,12 +63,32 @@ string NgramDict::Split(const string& str)
 			if(score > best)
 			{
 				curBest = part1 + " " + part2;
+				curPart1 = part1;
+				curPart2 = part2;
 				best = score;
 			}
 		}
 	}
 
-	return curBest;
+	bool bigramExist = false;
+
+	if(!CheckExist(curPart1))
+	{
+		return string();
+	}
+	auto list = GetNext(curPart1);
+
+	for (auto it = list.begin(); it != list.end(); it++)
+	{
+		if(curPart2.compare(it->first) ==0 )
+		{
+			bigramExist = true;
+		}
+	}
+
+	if(bigramExist)
+		return curBest;
+	return string(); 
 }
 
 int NgramDict::Levenshtein(const string & str1, const string& str2)
@@ -255,5 +282,8 @@ void NgramDict::ProcessLine(vector<string> & sentence)
 
 vector<pair<string, int>> & NgramDict::GetNext(const string & key)
 {
-	return (bigram_dictionary.find(key))->second;
+	auto& it = bigram_dictionary.find(key)->second;
+	sort(it.begin(), it.end(), NgramSort);
+
+	return it;
 }
