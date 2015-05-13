@@ -25,6 +25,8 @@ class DistanceDict
 
 	bool CheckExist(const string & str);
 
+	string SplitString(const string& str);
+
 	private:
 
 	void Update(const string& filename);
@@ -34,8 +36,6 @@ class DistanceDict
 	void ChangeFirst(const string& token, vector<pair< string, int >> * result);
 
 	bool CheckHelp(const string& str);
-
-	string SplitString(const string& str);
 
 	void Erase(const string& str, vector<pair< string, int >> * result, int start);
 

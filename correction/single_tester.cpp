@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 		distance_dict.Format(soln);
 
 		int flag = 0;
-		int counter = 1;
+		int counter = 3;
 
 		it = list->begin();
 

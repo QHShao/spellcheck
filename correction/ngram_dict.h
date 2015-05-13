@@ -26,6 +26,8 @@ class NgramDict
 	void RealWord(vector<string> & sentence);
 
 	void FormatLine(vector<string> & sentence);
+
+	string Split(const string& str);
 	
 	private:
 

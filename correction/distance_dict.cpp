@@ -144,6 +144,9 @@ string DistanceDict::SplitString(const string& str)
 {
 	int len = str.length();
 
+	size_t best = 0;
+	string curBest = string();
+
 	for (int i = 1; i < len - 1; i++)
 	{
 		std::string tmp = str;
@@ -152,10 +155,18 @@ string DistanceDict::SplitString(const string& str)
 		string part2 = tmp.substr(i, len - 1);
 
 		if (CheckExist(part1) && CheckExist(part2))
-			return part1 + " " + part2;
+		{
+			size_t score = dictionary[part1] * dictionary[part2];
+			if(score > best)
+			{
+				curBest = part1 + " " + part2;
+				best = score;
+			}
+
+		}
 	}
 
-	return NULL;
+	return curBest;
 }
 
 void DistanceDict::ProcessWord(int dis, const string& token, vector<pair< string, int >> * result)
@@ -163,6 +174,8 @@ void DistanceDict::ProcessWord(int dis, const string& token, vector<pair< string
 	distance = dis;
 	result->clear();
 	helpermap.clear();
+
+	string out;
 
 	EraseChar(token, result);
 	InsertChar(token,result);

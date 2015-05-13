@@ -36,6 +36,34 @@ NgramDict::NgramDict()
 
 }
 
+string NgramDict::Split(const string& str)
+{
+	int len = str.length();
+
+	size_t best = 0;
+	string curBest = string();
+
+	for (int i = 1; i < len - 1; i++)
+	{
+		std::string tmp = str;
+
+		string part1 = tmp.substr(0, i);
+		string part2 = tmp.substr(i, len - 1);
+
+		if (frequency_dict.CheckExist(part1) && frequency_dict.CheckExist(part2))
+		{
+			size_t score = frequency_dict.GetFrequency(part1) * frequency_dict.GetFrequency(part2);
+			if(score > best)
+			{
+				curBest = part1 + " " + part2;
+				best = score;
+			}
+		}
+	}
+
+	return curBest;
+}
+
 int NgramDict::Levenshtein(const string & str1, const string& str2)
 {
 	size_t len1 = str1.size();

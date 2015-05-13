@@ -28,9 +28,17 @@ int main(int argc, char* argv[])
 		istringstream cline(query);
 		distance_dict.Format(query);
 
-		if(distance_dict.CheckExist(query))
+		if(distance_dict.GetFrequency(query) > 10)
 		{
 			cout << "[RESULT]:" << query << endl;
+			continue;
+		}
+
+		string out;
+
+		if((out = distance_dict.SplitString(query)) != string())
+		{
+			cout << "[RESULT]:" << out << endl;
 			continue;
 		}
 
@@ -60,10 +68,14 @@ int main(int argc, char* argv[])
 				list->front() = tmp;
 			}
 
+		cout << "[RESULT]:" <<it->first << endl;
+
 		}			
 
-		cout << "[RESULT]:" <<it->first << endl;
-	
+		else
+		{
+			cout << "[RESULT]: No Suggestion." << endl;
+		}	
 	}
 
 	return 0;
