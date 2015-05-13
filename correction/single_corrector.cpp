@@ -34,14 +34,6 @@ int main(int argc, char* argv[])
 			continue;
 		}
 
-		string out;
-
-		if((out = distance_dict.SplitString(query)) != string())
-		{
-			cout << "[RESULT]:" << out << endl;
-			continue;
-		}
-
 		auto list = distance_dict.GetList(query);
 		auto it = list->begin();
 
@@ -68,14 +60,10 @@ int main(int argc, char* argv[])
 				list->front() = tmp;
 			}
 
-		cout << "[RESULT]:" <<it->first << endl;
-
 		}			
 
-		else
-		{
-			cout << "[RESULT]: No Suggestion." << endl;
-		}	
+		cout << "[RESULT]:" <<it->first << endl;
+	
 	}
 
 	return 0;

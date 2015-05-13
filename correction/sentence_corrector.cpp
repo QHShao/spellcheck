@@ -12,7 +12,7 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-	NgramDict ngram_dict; ////////////
+	NgramDict ngram_dict; 
 
 	while (1)
 	{
