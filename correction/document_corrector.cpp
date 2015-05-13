@@ -89,7 +89,19 @@ void process()
 			while (getline(cline, token, ' '))
 			{
 				if (token.compare("") != 0)
-					sentences[i].push_back(token);
+				{
+					string out = ngram_dict.Split(token);
+					if (out != string())
+					{
+						size_t index = out.find(" ");
+						string str1 = out.substr(0, index);
+						string str2 = out.substr(index+1, out.length() - index);
+						sentences[i].push_back(str1);
+						sentences[i].push_back(str2);
+					}
+					else
+						sentences[i].push_back(token);
+				}
 			}
 		}
 
