@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 		
 		cout<< sum << endl;
 
-		if (distance_dict.CheckExist(token))
+		if (distance_dict.GetFrequency(token) > 10)
 		{
 			exist ++;
 			correct ++;

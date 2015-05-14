@@ -123,7 +123,6 @@ void process()
 
 }
 
-
 int main(int argc, char ** argv)
 {
 	char * infile = argv[1];

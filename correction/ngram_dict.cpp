@@ -38,7 +38,15 @@ NgramDict::NgramDict()
 
 string NgramDict::Split(const string& str)
 {
-	if(frequency_dict.GetFrequency(str) > 10)
+	string sub = str;
+
+	bool cap = false;
+	if (sub[0] >= 'A' && sub[0] <= 'Z')
+		cap = true;
+
+	frequency_dict.Format(sub);
+	
+	if(frequency_dict.GetFrequency(sub) > 10)
 	{
 		return string();
 	}
@@ -52,7 +60,7 @@ string NgramDict::Split(const string& str)
 
 	for (int i = 1; i < len - 1; i++)
 	{
-		std::string tmp = str;
+		std::string tmp = sub;
 
 		string part1 = tmp.substr(0, i);
 		string part2 = tmp.substr(i, len - 1);
@@ -87,7 +95,12 @@ string NgramDict::Split(const string& str)
 	}
 
 	if(bigramExist)
+	{
+		if (cap)
+			curBest[0] += ('Z'-'z');
+
 		return curBest;
+	}
 	return string(); 
 }
 
